@@ -1,4 +1,4 @@
-filePath
+process
 =======
 
-file path utils for the browser and node.js
+process for the browser and node.js
