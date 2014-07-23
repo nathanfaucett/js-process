@@ -1,0 +1,25 @@
+{
+  "name": "process",
+  "version": "0.0.1",
+  "description": "process for the browser and node.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nathanfaucett/process.git"
+  },
+  "main": "src/index.js",
+  "keywords": [
+    "process",
+    "process.js"
+  ],
+  "author": "Nathan Faucett",
+  "license": "BSD-2-Clause",
+  "readmeFilename": "README.md",
+  "devDependencies": {
+    "grunt": "",
+    "grunt-jsbeautifier": ""
+  },
+  "dependencies": {
+    "event_emitter": "nathanfaucett/event_emitter"
+  }
+}
+
