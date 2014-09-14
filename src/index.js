@@ -15,10 +15,10 @@ module.exports = typeof(process) !== "undefined" ? process : (function() {
         this.config = {};
         this.execPath = ".";
         this.execArgv = [];
-        this.arch = ((/\b(?:AMD|IA|Win|WOW|x86_|x)[32|64]+\b/i.exec(navigator.userAgent) || "")[0] || "unknown").replace(/86_/i, "").toLowerCase();
-        this.platform = (navigator.platform.split(/[ \s]+/)[0]).toLowerCase() || "unknown";
+        this.arch = global.navigator ? ((/\b(?:AMD|IA|Win|WOW|x86_|x)[32|64]+\b/i.exec(global.navigator.userAgent) || "")[0] || "unknown").replace(/86_/i, "").toLowerCase() : "unknown";
+        this.platform = global.navigator ? (global.navigator.platform ? global.navigator.platform.split(/[ \s]+/)[0] : "unknown").toLowerCase() : "unknown";
         this.maxTickDepth = 1000;
-        this._cwd = location.pathname;
+        this._cwd = global.location ? global.location.pathname : "/";
     }
     EventEmitter.extend(Process);
 
@@ -29,7 +29,7 @@ module.exports = typeof(process) !== "undefined" ? process : (function() {
     });
 
     Process.prototype.memoryUsage = (function() {
-        var performance = window.performance || {},
+        var performance = global.performance || {},
             memory = {
                 rss: 0,
                 heapTotal: 0,
@@ -48,36 +48,71 @@ module.exports = typeof(process) !== "undefined" ? process : (function() {
     }());
 
     Process.prototype.nextTick = (function() {
-        var canSetImmediate = !!window.setImmediate,
-            canPost = window.postMessage && window.addEventListener;
+        var canSetImmediate = !!global.setImmediate,
+            canMutationObserver = !!global.MutationObserver,
+            canPost = global.postMessage && global.addEventListener,
+            queue;
 
         if (canSetImmediate) {
             return function(fn) {
-                return window.setImmediate(fn)
+                return global.setImmediate(fn);
+            };
+        }
+
+        queue = [];
+
+        if (canMutationObserver) {
+            var hiddenDiv = document.createElement("div");
+            observer = new MutationObserver(function hander() {
+                var queueList = queue.slice();
+                queue.length = 0;
+                queueList.forEach(function forEachQueueList(fn) {
+                    fn();
+                });
+            });
+
+            observer.observe(hiddenDiv, {
+                attributes: true
+            });
+
+            return function nextTick(fn) {
+                if (!queue.length) {
+                    hiddenDiv.setAttribute("yes", "no");
+                }
+                queue.push(fn);
             };
         }
 
         if (canPost) {
-            var queue = [];
 
-            window.addEventListener("message", function(e) {
-                var source = e.source;
+            global.addEventListener("message", function onNextTick(e) {
+                var source = e.source,
+                    fn;
 
-                if ((source === window || source === null) && e.data === "process-tick") {
+                if ((source === global || source === null) && e.data === "process-tick") {
                     e.stopPropagation();
 
-                    if (queue.length > 0) queue.shift()();
+                    if (queue.length > 0) {
+                        fn = queue.shift();
+                        fn();
+                    }
                 }
             }, true);
 
             return function nextTick(fn) {
                 queue.push(fn);
-                window.postMessage("process-tick", "*");
+                global.postMessage("process-tick", "*");
+            };
+        }
+
+        if (global.setTimeout) {
+            return function nextTick(fn) {
+                global.setTimeout(fn, 0);
             };
         }
 
         return function nextTick(fn) {
-            window.setTimeout(fn, 0);
+            fn();
         };
     }());
 
@@ -86,7 +121,7 @@ module.exports = typeof(process) !== "undefined" ? process : (function() {
     };
 
     Process.prototype.chdir = function(dir) {
-        var cwd = location.pathname,
+        var cwd = global.location ? global.location.pathname : "/",
             length = cwd.length,
             newDir = dir.length >= length ? dir : dir.substring(0, cwd.length) + "/";
 
@@ -98,7 +133,7 @@ module.exports = typeof(process) !== "undefined" ? process : (function() {
     };
 
     Process.prototype.hrtime = (function() {
-        var performance = window.performance || {},
+        var performance = global.performance || {},
             start;
 
         Date.now || (Date.now = function now() {
