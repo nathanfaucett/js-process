@@ -62,14 +62,18 @@ module.exports = typeof(process) !== "undefined" ? process : (function() {
         queue = [];
 
         if (canMutationObserver) {
-            var hiddenDiv = document.createElement("div");
-            observer = new MutationObserver(function hander() {
-                var queueList = queue.slice();
-                queue.length = 0;
-                queueList.forEach(function forEachQueueList(fn) {
-                    fn();
+            var hiddenDiv = document.createElement("div"),
+                observer = new MutationObserver(function hander() {
+                    var queueList = queue.slice(),
+                        length = queueList.length,
+                        i = -1;
+
+                    queue.length = 0;
+
+                    while (++i < length) {
+                        queueList[i]();
+                    }
                 });
-            });
 
             observer.observe(hiddenDiv, {
                 attributes: true
@@ -122,8 +126,14 @@ module.exports = typeof(process) !== "undefined" ? process : (function() {
 
     Process.prototype.chdir = function(dir) {
         var cwd = global.location ? global.location.pathname : "/",
-            length = cwd.length,
-            newDir = dir.length >= length ? dir : dir.substring(0, cwd.length) + "/";
+            length, newDir;
+
+        if (dir === "/") {
+            newDir = "/";
+        } else {
+            length = cwd.length;
+            newDir = dir.length >= length ? dir : dir.substring(0, length) + "/";
+        }
 
         if (cwd.indexOf(newDir) === 0) {
             this._cwd = dir;
@@ -170,8 +180,8 @@ module.exports = typeof(process) !== "undefined" ? process : (function() {
                 }
             }
 
-            return [seconds, nanoseconds]
-        }
+            return [seconds, nanoseconds];
+        };
     }());
 
     Process.prototype.uptime = (function() {
@@ -179,7 +189,7 @@ module.exports = typeof(process) !== "undefined" ? process : (function() {
 
         return function uptime() {
             return ((Date.now() - start) * 1e-3) | 0;
-        }
+        };
     }());
 
     Process.prototype.abort = function() {
