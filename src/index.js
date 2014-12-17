@@ -1,6 +1,12 @@
 module.exports = typeof(process) !== "undefined" ? process : (function() {
     var EventEmitter = require("event_emitter"),
-        document = require("environment").document;
+        environment = require("environment");
+
+
+    var window = environment.window,
+        document = environment.document,
+        navigator = window.navigator,
+        location = window.location;
 
 
     function Process() {
@@ -16,21 +22,19 @@ module.exports = typeof(process) !== "undefined" ? process : (function() {
         this.config = {};
         this.execPath = ".";
         this.execArgv = [];
-        this.arch = global.navigator ? ((/\b(?:AMD|IA|Win|WOW|x86_|x)[32|64]+\b/i.exec(global.navigator.userAgent) || "")[0] || "unknown").replace(/86_/i, "").toLowerCase() : "unknown";
-        this.platform = global.navigator ? (global.navigator.platform ? global.navigator.platform.split(/[ \s]+/)[0] : "unknown").toLowerCase() : "unknown";
+        this.arch = navigator ? ((/\b(?:AMD|IA|Win|WOW|x86_|x)[32|64]+\b/i.exec(navigator.userAgent) || "")[0] || "unknown").replace(/86_/i, "").toLowerCase() : "unknown";
+        this.platform = navigator ? (navigator.platform ? navigator.platform.split(/[ \s]+/)[0] : "unknown").toLowerCase() : "unknown";
         this.maxTickDepth = 1000;
-        this._cwd = global.location ? global.location.pathname : "/";
+        this._cwd = location ? location.pathname : "/";
     }
     EventEmitter.extend(Process);
 
-    Object.defineProperty(Process.prototype, "browser", {
-        get: function() {
-            return true;
-        }
+    defineProperty(Process.prototype, "browser", {
+        value: true
     });
 
     Process.prototype.memoryUsage = (function() {
-        var performance = global.performance || {},
+        var performance = window.performance || {},
             memory = {
                 rss: 0,
                 heapTotal: 0,
@@ -49,14 +53,14 @@ module.exports = typeof(process) !== "undefined" ? process : (function() {
     }());
 
     Process.prototype.nextTick = (function() {
-        var canSetImmediate = !!global.setImmediate,
-            canMutationObserver = !!global.MutationObserver,
-            canPost = global.postMessage && global.addEventListener,
+        var canSetImmediate = !!window.setImmediate,
+            canMutationObserver = !!window.MutationObserver,
+            canPost = window.postMessage && window.addEventListener,
             queue;
 
         if (canSetImmediate) {
             return function(fn) {
-                return global.setImmediate(fn);
+                return window.setImmediate(fn);
             };
         }
 
@@ -90,11 +94,11 @@ module.exports = typeof(process) !== "undefined" ? process : (function() {
 
         if (canPost) {
 
-            global.addEventListener("message", function onNextTick(e) {
+            window.addEventListener("message", function onNextTick(e) {
                 var source = e.source,
                     fn;
 
-                if ((source === global || source === null) && e.data === "process-tick") {
+                if ((source === window || source === null) && e.data === "process-tick") {
                     e.stopPropagation();
 
                     if (queue.length > 0) {
@@ -106,7 +110,7 @@ module.exports = typeof(process) !== "undefined" ? process : (function() {
 
             return function nextTick(fn) {
                 queue.push(fn);
-                global.postMessage("process-tick", "*");
+                window.postMessage("process-tick", "*");
             };
         }
 
@@ -126,7 +130,7 @@ module.exports = typeof(process) !== "undefined" ? process : (function() {
     };
 
     Process.prototype.chdir = function(dir) {
-        var cwd = global.location ? global.location.pathname : "/",
+        var cwd = location ? location.pathname : "/",
             length, newDir;
 
         if (dir === "/") {
@@ -144,7 +148,7 @@ module.exports = typeof(process) !== "undefined" ? process : (function() {
     };
 
     Process.prototype.hrtime = (function() {
-        var performance = global.performance || {},
+        var performance = window.performance || {},
             start;
 
         Date.now || (Date.now = function now() {
@@ -241,7 +245,7 @@ module.exports = typeof(process) !== "undefined" ? process : (function() {
         throw new Error("process.setuid is not supported");
     };
 
-    Object.defineProperty(Process.prototype, "stderr", {
+    defineProperty(Process.prototype, "stderr", {
         get: function() {
             throw new Error("process.stderr is not supported");
         },
@@ -250,7 +254,7 @@ module.exports = typeof(process) !== "undefined" ? process : (function() {
         }
     });
 
-    Object.defineProperty(Process.prototype, "stdin", {
+    defineProperty(Process.prototype, "stdin", {
         get: function() {
             throw new Error("process.stderr is not supported");
         },
@@ -259,7 +263,7 @@ module.exports = typeof(process) !== "undefined" ? process : (function() {
         }
     });
 
-    Object.defineProperty(Process.prototype, "stdout", {
+    defineProperty(Process.prototype, "stdout", {
         get: function() {
             throw new Error("process.stderr is not supported");
         },
@@ -267,6 +271,18 @@ module.exports = typeof(process) !== "undefined" ? process : (function() {
             throw new Error("process.stderr is not supported");
         }
     });
+
+
+    function defineProperty(object, property, description) {
+        if (Object.defineProperty) {
+            Object.defineProperty(object, property, description);
+        } else {
+            if (description && description.value) {
+                defineProperty[property] = description.value;
+            }
+        }
+    }
+
 
     return new Process();
 }());
