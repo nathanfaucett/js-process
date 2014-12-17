@@ -20,7 +20,8 @@
     "grunt-jsbeautifier": ""
   },
   "dependencies": {
-    "event_emitter": "nathanfaucett/event_emitter"
+    "event_emitter": "nathanfaucett/event_emitter",
+    "environment": "nathanfaucett/environment"
   }
 }
 

@@ -1,5 +1,6 @@
 module.exports = typeof(process) !== "undefined" ? process : (function() {
-    var EventEmitter = require("event_emitter");
+    var EventEmitter = require("event_emitter"),
+        document = require("environment").document;
 
 
     function Process() {
@@ -196,23 +197,23 @@ module.exports = typeof(process) !== "undefined" ? process : (function() {
         throw new Error("process.abort is not supported");
     };
 
-    Process.prototype.binding = function(name) {
+    Process.prototype.binding = function() {
         throw new Error("process.binding is not supported");
     };
 
-    Process.prototype.umask = function(mask) {
+    Process.prototype.umask = function() {
         throw new Error("process.umask is not supported");
     };
 
-    Process.prototype.kill = function(id, signal) {
+    Process.prototype.kill = function() {
         throw new Error("process.kill is not supported");
     };
 
-    Process.prototype.initgroups = function(user, extra_group) {
+    Process.prototype.initgroups = function() {
         throw new Error("process.initgroups is not supported");
     };
 
-    Process.prototype.setgroups = function(groups) {
+    Process.prototype.setgroups = function() {
         throw new Error("process.setgroups is not supported");
     };
 
@@ -236,7 +237,7 @@ module.exports = typeof(process) !== "undefined" ? process : (function() {
         throw new Error("process.exit is not supported");
     };
 
-    Process.prototype.setuid = function(id) {
+    Process.prototype.setuid = function() {
         throw new Error("process.setuid is not supported");
     };
 
