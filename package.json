@@ -17,11 +17,11 @@
   "devDependencies": {
     "grunt": "",
     "grunt-contrib-jshint": "^0.10.0",
-    "grunt-jsbeautifier": ""
+    "grunt-jsbeautifier": "",
+    "mocha": "^2.1.0"
   },
   "dependencies": {
     "event_emitter": "nathanfaucett/event_emitter",
     "environment": "nathanfaucett/environment"
   }
 }
-
