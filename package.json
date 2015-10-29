@@ -7,21 +7,32 @@
     "url": "https://github.com/nathanfaucett/process.git"
   },
   "main": "src/index.js",
+  "browser": "src/browser.js",
+  "scripts": {
+    "test": "npm run test-node",
+    "test-node": "node ./test | ./node_modules/.bin/tap-spec",
+    "test-node-raw": "node ./test",
+    "test-browser-local": "zuul --local 9999 --ui tape -- ./test"
+  },
   "keywords": [
     "process",
     "process.js"
   ],
   "author": "Nathan Faucett",
-  "license": "BSD-2-Clause",
+  "license": "MIT",
   "readmeFilename": "README.md",
   "devDependencies": {
-    "grunt": "",
-    "grunt-contrib-jshint": "^0.10.0",
-    "grunt-jsbeautifier": "",
-    "mocha": "^2.1.0"
+    "grunt": "^0.4.5",
+    "grunt-contrib-jshint": "^0.11.3",
+    "grunt-jsbeautifier": "^0.2.10",
+    "tap-spec": "^4.1.0",
+    "tape": "^4.2.0",
+    "zuul": "^3.6.0"
   },
   "dependencies": {
-    "event_emitter": "nathanfaucett/event_emitter",
-    "environment": "nathanfaucett/environment"
+    "event_emitter": "git://github.com/nathanfaucett/event_emitter.git",
+    "environment": "git://github.com/nathanfaucett/environment.git",
+    "now": "git://github.com/nathanfaucett/now.git",
+    "asap": "git://github.com/nathanfaucett/asap.git"
   }
 }
