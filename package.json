@@ -1,5 +1,5 @@
 {
-  "name": "process",
+  "name": "@nathanfaucett/process",
   "version": "0.0.1",
   "description": "process for the browser and node.js",
   "repository": {
@@ -22,17 +22,17 @@
   "license": "MIT",
   "readmeFilename": "README.md",
   "devDependencies": {
-    "grunt": "^0.4.5",
-    "grunt-contrib-jshint": "^0.11.3",
-    "grunt-jsbeautifier": "^0.2.10",
+    "grunt": "^1.0.1",
+    "grunt-contrib-jshint": "^1.0.0",
+    "grunt-jsbeautifier": "^0.2.13",
     "tap-spec": "^4.1.0",
     "tape": "^4.2.0",
     "zuul": "^3.6.0"
   },
   "dependencies": {
-    "event_emitter": "git://github.com/nathanfaucett/event_emitter.git",
-    "environment": "git://github.com/nathanfaucett/environment.git",
-    "now": "git://github.com/nathanfaucett/now.git",
-    "asap": "git://github.com/nathanfaucett/asap.git"
+    "@nathanfaucett/event_emitter": "^0.0.1",
+    "@nathanfaucett/environment": "^0.0.1",
+    "@nathanfaucett/now": "^0.0.1",
+    "@nathanfaucett/asap": "^0.0.1"
   }
 }

@@ -1,7 +1,7 @@
-var EventEmitter = require("event_emitter"),
-    environment = require("environment"),
-    asap = require("asap"),
-    now = require("now");
+var EventEmitter = require("@nathanfaucett/event_emitter"),
+    environment = require("@nathanfaucett/environment"),
+    asap = require("@nathanfaucett/asap"),
+    now = require("@nathanfaucett/now");
 
 
 var window = environment.window,
